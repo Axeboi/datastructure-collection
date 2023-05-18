@@ -44,18 +44,57 @@ public class Main {
     }
 
     public static void AVLTreeSetupAndTest() {
+//        AVLTree tree = new AVLTree();
+//
+//        tree.insert(10);
+//        tree.insert(6);
+//        tree.insert(12);
+//        tree.insert(8);
+//        tree.insert(14);
+//        tree.insert(16);
+//
+//        //tree.delete(tree.root, 6);
+//        System.out.println(tree.root);
+        AVLDeleteTwoChildrenTest();
+    }
+
+    private static void AVLInsertTest() {
         AVLTree tree = new AVLTree();
 
         tree.insert(10);
         tree.insert(6);
-        tree.insert(8);
         tree.insert(12);
+        tree.insert(8);
         tree.insert(14);
         tree.insert(16);
-
-        System.out.println(tree.root);
     }
 
+    private static void AVLDeleteNoChildrenTest() {
+
+    }
+
+    private static void AVLDeleteLeftChildTest() {
+
+    }
+
+    private static void AVLDeleteRightChildTest() {
+
+    }
+
+    private static void AVLDeleteTwoChildrenTest() {
+        AVLTree tree = new AVLTree();
+
+        tree.insert(10);
+        tree.insert(20);
+        tree.insert(30);
+        tree.insert(26);
+        tree.insert(24);
+
+        tree.delete(tree.root, 30);
+
+        assert(tree.root.right.right.data == 24);
+        assert(tree.root.right.right.left.left == null);
+    }
     public static void main(String[] args) throws Exception{
         AVLTreeSetupAndTest();
     }

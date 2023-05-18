@@ -40,34 +40,62 @@ public class AVLTree {
             throw new RuntimeException("duplicate Key!");
         }
 
-        updateHeight(node);
-        var balance = getBalanceFactor(node);
+//        updateHeight(node);
+//        var balance = getBalanceFactor(node);
+//
+//        if (node != null) {
+//            if (balance < -1) {
+//                if (height(node.left.right) > height(node.left.left)) {
+//                    node.left = rotateLeft(node.left);
+//                    return rotateRight(node);
+//                } else {
+//                    return rotateRight(node);
+//                }
+//                //node = rotateRight(node);
+//            } else if (balance > 1){
+//                if (height(node.right.left) > height(node.right.right)) {
+//                    node.right = rotateRight(node.right);
+//                    node = rotateLeft(node);
+//                } else {
+//                    node = rotateLeft(node);
+//                }
+//                //node = rotateLeft(node);
+//            }
+//        }
 
         if (node != null) {
-            if (balance < -1) {
-                if (height(node.left.right) > height(node.left.left)) {
-                    node.left = rotateLeft(node.left);
-                    return rotateRight(node);
-                } else {
-                    return rotateRight(node);
-                }
-                //node = rotateRight(node);
-            } else if (balance > 1){
-                if (height(node.right.left) > height(node.right.right)) {
-                    node.right = rotateRight(node.right);
-                    node = rotateLeft(node);
-                } else {
-                    node = rotateLeft(node);
-                }
-                //node = rotateLeft(node);
-            }
+            node = rebalance(node);
         }
-
         //System.out.println("Balance factor: " + balance + " " + node);
         return node;
     }
 
-    public Node rotateRight(Node node) {
+    private Node rebalance(Node node) {
+        updateHeight(node);
+        var balance = getBalanceFactor(node);
+
+        if (balance < -1) {
+            if (height(node.left.right) > height(node.left.left)) {
+                node.left = rotateLeft(node.left);
+                return rotateRight(node);
+            } else {
+                return rotateRight(node);
+            }
+            //node = rotateRight(node);
+        } else if (balance > 1){
+            if (height(node.right.left) > height(node.right.right)) {
+                node.right = rotateRight(node.right);
+                node = rotateLeft(node);
+            } else {
+                node = rotateLeft(node);
+            }
+            //node = rotateLeft(node);
+        }
+
+        return node;
+    }
+
+    private Node rotateRight(Node node) {
         System.out.println(" HERE LIES A ROTATE RIGHT");
 
         Node newParent = node.left;
@@ -84,7 +112,7 @@ public class AVLTree {
         return newParent;
     }
 
-    public Node rotateLeft(Node node) {
+    private Node rotateLeft(Node node) {
         Node newParent = node.right;
         node.right = newParent.left;
         newParent.left = node;
@@ -98,15 +126,44 @@ public class AVLTree {
         return newParent;
     }
 
-    public Node rotateLeftRight(Node node) {
-        System.out.println(" ROTATING LEFT RIGHT");
-        node.left = rotateLeft(node);
-        return rotateRight(node);
+    private Node minimumSuccessorNode(Node node) {
+        Node current = node;
+        while (current.left != null) {
+            current = current.left;
+        }
+
+        return current;
     }
 
-    public Node rotateRightLeft(Node node) {
-        System.out.println(" ROTATING LEFT RIGHT");
+    public Node delete(Node root, Integer data) {
+        if (root == null) return root;
 
-        return rotateLeft(rotateRight(node).right);
+        if (data < root.data) {
+            root.left = delete(root.left, data);
+        } else if (data > root.data) {
+            root.right = delete(root.right, data);
+        } else {
+            // Aktchual delete
+            // If root only has one child, delete that child
+            // If root has no child, set root to null
+            if (root.left == null || root.right == null) {
+                // Set root to the non-null child or set root to null.
+                root = (root.left == null) ? root.right : root.left;
+
+            } else {
+                Node temp = minimumSuccessorNode(root);
+                root.data = temp.data;
+                // Delete the duplicate minimum successor node
+                root = delete(root.right, temp.data);
+            }
+        }
+
+        if (root == null) return root;
+
+        // Step 2: update height of current node
+        updateHeight(root);
+
+        // Step 3: rebalance shit
+        return rebalance(root);
     }
 }
